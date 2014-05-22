@@ -5,7 +5,7 @@ var net = require('net')
 var clients = {}
 var ports = []
 for (var i = 0; i < 1000; i++) { ports[i] = {port: 8088 + i, remote: null, local: null, gateway: null, flow: {rx_bytes: 0, tx_bytes: 0}} }
-var requests = 0;
+var requests = 0
 
 // func
 var tunnelExists = function(remote, destination) {
@@ -14,6 +14,16 @@ var tunnelExists = function(remote, destination) {
 		if (value.remote == remote && value.local == destination) { tunnel_exists = true }
 	})
 	return tunnel_exists
+}
+
+var getTunnelKey = function(remote, destination) {
+	var port_key
+	ports.some(function(value, key) {
+		if (value.remote == remote && value.local == destination) {
+			port_key = value.port
+		}
+	})
+	return port_key
 }
 
 var portKey = function() {
@@ -29,8 +39,8 @@ var portKey = function() {
 
 var createGateway = function(remote, destination, port) {
 	// check if tunnel is open, no need for more than one tunnel
-	console.log('Creating tunnel for remote client=>' + remote + ', destination=>' + destination + ':' + port)
 	if (!tunnelExists(remote, destination)) {
+		console.log('Creating tunnel for remote client=>' + remote + ', destination=>' + destination + ':' + port)
 		var proxyKey = portKey()
 		ports[proxyKey].remote = remote
 		ports[proxyKey].local = destination
@@ -44,13 +54,13 @@ var createGateway = function(remote, destination, port) {
 			})
 			if (client.remoteAddress == remote) {
 				// correct remote ip
-				console.log('Expected IP=>' + remote + ', client IP=>' + client.remoteAddress)
-				console.log("Rx bytes: " + ports[proxyKey].flow.rx_bytes + ", Tx bytes: " + ports[proxyKey].flow.tx_bytes)
+				//console.log('Expected IP=>' + remote + ', client IP=>' + client.remoteAddress)
+				console.log("Authorized client (" + remote + ")> Rx bytes: " + ports[proxyKey].flow.rx_bytes + ", Tx bytes: " + ports[proxyKey].flow.tx_bytes)
 			} else {
 				// uninvited
-				console.log('Expected IP=>' + remote + ', client IP=>' + client.remoteAddress)
+				//console.log('Expected IP=>' + remote + ', client IP=>' + client.remoteAddress)
 				console.log("Unauthorized client detected, closing socket")
-				client.write("Unauthorized sir.", function() {
+				client.write("Unauthorized sir.<br><b>NONE SHALL PASS</b>", function() {
 					client.end()
 				})
 			}
@@ -63,6 +73,9 @@ var createGateway = function(remote, destination, port) {
 		})
 		ports[proxyKey].gateway.listen(ports[proxyKey].port)
 		return ports[proxyKey].port
+	} else {
+		// tunnel already requested, resend port
+		return getTunnelKey(remote, destination)
 	}
 }
 
