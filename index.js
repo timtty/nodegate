@@ -93,7 +93,7 @@ var destroyGateway = function(remote) {
 }
 
 var getPortList = function(callBack) {
-	var list
+	var list = []
 	ports.forEach(function(value, key) {
 		if (value.gateway != null) {
 			item = {}
