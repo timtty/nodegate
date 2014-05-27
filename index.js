@@ -4,7 +4,7 @@ var net = require('net')
 //locals
 var clients = {}
 var ports = []
-for (var i = 0; i < 1000; i++) { ports[i] = {port: 8088 + i, remote: null, local: null, gateway: null, flow: {rx_bytes: 0, tx_bytes: 0}} }
+for (var i = 0; i < 1000; i++) { ports[i] = {port: 8088 + i, remote: null, local: null, local_port: null, gateway: null, flow: {rx_bytes: 0, tx_bytes: 0}} }
 var requests = 0
 
 // func
@@ -44,6 +44,7 @@ var createGateway = function(remote, destination, port) {
 		var proxyKey = portKey()
 		ports[proxyKey].remote = remote
 		ports[proxyKey].local = destination
+		ports[proxyKey].local_port = port
 		ports[proxyKey].gateway = net.createServer(function(client) {
 			client.on('error', function(e) {
 				console.log('Socket for endpoint ' + client.remoteAddress + ' encountered an error=>' + e)
@@ -99,7 +100,8 @@ var getPortList = function(callBack) {
 			item = {}
 			item.whiteListIp = value.remote
 			item.destinationIp = value.local
-			item.destinationPort = value.port
+			item.destinationPort = value.local_port
+			item.listenPort = value.port
 			item.flow = value.flow
 			list.push(item)
 		}
