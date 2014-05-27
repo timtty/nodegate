@@ -1,6 +1,6 @@
 {
   "name": "nodegate",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Gateway/Proxy/Tunnel Server/Service Powered by Node",
   "main": "index.js",
   "scripts": {

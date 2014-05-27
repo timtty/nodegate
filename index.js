@@ -92,8 +92,13 @@ var destroyGateway = function(remote) {
 	})
 }
 
+var getGatewayList = function(callBack) {
+	callBack(ports)
+}
+
 //exports
 module.exports = {
 	createGateway: createGateway,
-	destroyGateway: destroyGateway
+	destroyGateway: destroyGateway,
+	_gateways: getGatewayList
 }
