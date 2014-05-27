@@ -92,9 +92,24 @@ var destroyGateway = function(remote) {
 	})
 }
 
+var getPortList = function(callBack) {
+	var list
+	ports.forEach(function(value, key) {
+		if (value.gateway != null) {
+			item = {}
+			item.whiteListIp = value.remote
+			item.destinationIp = value.local
+			item.destinationPort = value.port
+			item.flow = value.flow
+			list.push(item)
+		}
+	})
+	callBack(list)
+}
+
 //exports
 module.exports = {
 	createGateway: createGateway,
 	destroyGateway: destroyGateway,
-	_gateways: ports
+	_gateways: getPortList
 }
